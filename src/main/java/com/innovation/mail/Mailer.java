@@ -1,7 +1,11 @@
 package com.innovation.mail;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -18,6 +22,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 
+import com.innovation.grammer.Grammer;
 import com.innovation.rule.RuleEngine;
 import com.persitence.TaskQueue;
 import com.pract.task.Task;
@@ -94,7 +99,31 @@ public class Mailer {
 					body = bp.getContent().toString();
 				}
 				String subject = msg.getSubject();
-				Date sentDate = RuleEngine.parseSubject(subject);
+				
+				Date sentDate = null;
+                
+                if(subject.contains("birthday")){
+                	System.out.println("subject matched");
+                	
+               	String comleteResult =  Grammer.searchOne(Grammer.root, "birthday");
+               	System.out.println("Complete Result is :: " + comleteResult);
+               	
+               	StringTokenizer stringTokenizer = new StringTokenizer(comleteResult, " ");
+               	stringTokenizer.nextToken();
+               	String date = stringTokenizer.nextToken();
+               	 
+               	 System.out.println("Date is :: " + date);
+               	 
+               	 DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+               	 Date d = format.parse(date);
+               	 sentDate = d;
+               	 
+               	 System.out.println("Now date is : " + sentDate);
+                }else{
+                	sentDate = RuleEngine.parseSubject(subject);
+                }
+				
+				
 				Task task = new Task(addressTo, sentDate, subject, body);
 				TaskQueue.addTask(task);
 

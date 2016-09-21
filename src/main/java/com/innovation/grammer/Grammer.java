@@ -3,13 +3,17 @@ package com.innovation.grammer;
 
 public class Grammer {
 	
-	private Node root;
+	public static Node root;
 	
-	public void init(){
+	static{
+		init();
+	}
+	
+	public static void init(){
 		root = new Node();
 	}
 	
-	public void addWord(Node root, String word, String symbol){
+	public static void addWord(Node root, String word, String symbol){
 		
 		int index = word.charAt(0) - 97;
 		Node temp = root;
@@ -29,7 +33,7 @@ public class Grammer {
 		temp.symbol = symbol;
 	}
 	
-	public String search(Node root, String word){
+	/*public static String search(Node root, String word){
 		Node temp = root;
 		String result = null;
 		for(int i = 0; i < word.length(); i++){
@@ -46,9 +50,9 @@ public class Grammer {
 		}
 		return result;
 	}
+	*/
 	
-	
-	public String searchOne(Node root, String word){
+	public static String searchOne(Node root, String word){
 		Node temp = root;
 		String result = null;
 		for(int i = 0; i < word.length(); i++){

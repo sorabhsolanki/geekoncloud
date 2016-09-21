@@ -17,7 +17,7 @@ public class WriterJob implements Job{
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		System.out.println("Writer Job::::::::::");
 		for(Task task : TaskQueue.getList()){
-			System.out.println(task.getName());
+			//System.out.println(task.getName());
 			
 			Date currentDate = new Date();
 			
@@ -25,7 +25,6 @@ public class WriterJob implements Job{
 				System.out.println("Picked up the Task : " + task.getSubject());
 				task.setProcessed(true);
 				mailer.sendMail(task);
-				
 			}
 		}
 
