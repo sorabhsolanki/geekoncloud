@@ -21,10 +21,11 @@ public class WriterJob implements Job{
 			
 			Date currentDate = new Date();
 			
-			if(!task.isProcessed() && currentDate.after(task.getSentDate())){
+			if(!task.isProcessed() && currentDate.after(task.getRemindDate())){
 				System.out.println("Picked up the Task : " + task.getSubject());
-				mailer.sendMail(task);
 				task.setProcessed(true);
+				mailer.sendMail(task);
+				
 			}
 		}
 

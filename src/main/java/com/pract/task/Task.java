@@ -6,20 +6,20 @@ import java.util.Date;
 public class Task {
 
 	private String name;
-	private Date sentDate;
+	private Date remindDate;
 	private String subject;
 	private Object content;
 	private boolean isProcessed;
 	
-	public Task(String name, Date sentDate, String subject, Object content) {
+	public Task(String name, Date remindDate, String subject, Object content) {
 		this.name = name;
-		this.sentDate = sentDate;
+		this.remindDate = remindDate;
 		this.subject = subject;
 		this.content = content;
 	}
 
-	public Date getSentDate() {
-		return sentDate;
+	public Date getRemindDate() {
+		return remindDate;
 	}
 
 	public String getSubject() {

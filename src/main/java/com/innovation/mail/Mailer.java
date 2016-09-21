@@ -23,84 +23,80 @@ import com.persitence.TaskQueue;
 import com.pract.task.Task;
 
 public class Mailer {
+	final private String USER_NAME = "geekoncloud@gmail.com";
+	final private String PASSWORD = "geek@123";
+	private Properties props;
+	private Session readMailSession;
+	private Session sendMailSession;
 
-     public void sendMail(Task task) {
-		final String username = "geekoncloud@gmail.com";
-		final String password = "geek@123";
-
-		Properties props = new Properties();
+	public Mailer() {
+		props = new Properties();
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.host", "smtp.gmail.com");
 		props.put("mail.smtp.port", "587");
 
-		Session session = Session.getInstance(props,
-				new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(username, password);
-					}
-				});
+		sendMailSession = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(USER_NAME, PASSWORD);
+			}
+		});
+		props.put("mail.store.protocol", "imaps");
+		readMailSession = Session.getInstance(props, null);
+	}
+
+	public void sendMail(Task task) {
 
 		try {
-
-			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress("geekoncloud@gmail.com"));
+			Message message = new MimeMessage(sendMailSession);
+			message.setFrom(new InternetAddress(USER_NAME));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(task.getName()));
-			message.setSubject("Testing Subject");
-			message.setText("Dear Mail Crawler," + "\n\n No spam to my email, please!");
+			message.setSubject("Gentle Reminder: " + task.getSubject());
+			message.setText(task.getContent().toString());
 
 			Transport.send(message);
 
 			System.out.println("Done");
 
 		} catch (MessagingException e) {
+			task.setProcessed(false);
 			throw new RuntimeException(e);
 		}
 	}
-     
-     
-     public void readMail(){
-    	 System.out.println("Inside mailer ==============================");
-    	 Properties props = new Properties();
-         props.setProperty("mail.store.protocol", "imaps");
-         try {
-        	 Session session = Session.getInstance(props, null);
-             Store store = session.getStore();
-             store.connect("imap.gmail.com", "geekoncloud@gmail.com", "geek@123");
-             Folder inbox = store.getFolder("INBOX");
-        	 System.out.println("length------------- : 31");
 
-             
-             inbox.open(Folder.READ_WRITE);
-             System.out.println("length------------- : 12");
-             Flags seen = new Flags(Flags.Flag.SEEN);
-             FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-             
-             
-             
-             Message messages[] = inbox.search(unseenFlagTerm);
-             System.out.println("length------------- : " + messages.length);
-             for(Message msg : messages){
-            	 System.out.println("=====================================================================================================================");
-                 Address[] in = msg.getFrom();
-                 String addressTo = null;
-                 for (Address address : in) {
-                	 addressTo = address.toString();
-                 }
-                 Multipart mp = (Multipart) msg.getContent();
-                 BodyPart bp = mp.getBodyPart(0);
-                 
-                 
-                 String subject = msg.getSubject();
-                 Date sentDate = RuleEngine.parseSubject(subject);
-                 
-                 Task task = new Task(addressTo, sentDate , subject, bp.getContent());
-                 TaskQueue.addTask(task);
-                 
-             }
-             
-         } catch (Exception mex) {
-            System.out.println(mex);
-         }
-     }
+	public void readMail() {
+		System.out.println("Inside mailer ==============================");
+		try {
+			Store store = readMailSession.getStore();
+			store.connect("imap.gmail.com", USER_NAME, PASSWORD);
+			Folder inbox = store.getFolder("INBOX");
+
+			inbox.open(Folder.READ_WRITE);
+			Flags seen = new Flags(Flags.Flag.SEEN);
+			FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
+
+			Message messages[] = inbox.search(unseenFlagTerm);
+			System.out.println("length------------- : " + messages.length);
+			for (Message msg : messages) {
+				System.out.println("============================================================");
+				Address[] in = msg.getFrom();
+				String addressTo = null;
+				for (Address address : in) {
+					addressTo = address.toString();
+				}
+				Multipart mp = (Multipart) msg.getContent();
+				BodyPart bp = mp.getBodyPart(0);
+
+				String subject = msg.getSubject();
+				Date sentDate = RuleEngine.parseSubject(subject);
+
+				Task task = new Task(addressTo, sentDate, subject, bp.getContent());
+				TaskQueue.addTask(task);
+
+			}
+
+		} catch (Exception mex) {
+			System.out.println(mex);
+		}
+	}
 }

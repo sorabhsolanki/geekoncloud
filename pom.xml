@@ -31,11 +31,11 @@
 			<artifactId>mail</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.wanasit</groupId>
 			<artifactId>chrono</artifactId>
 			<version>LATEST</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>com.rubiconproject.oss</groupId>
 			<artifactId>jchronic</artifactId>
