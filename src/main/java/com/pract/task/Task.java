@@ -8,10 +8,10 @@ public class Task {
 	private String name;
 	private Date remindDate;
 	private String subject;
-	private Object content;
+	private String content;
 	private boolean isProcessed;
 	
-	public Task(String name, Date remindDate, String subject, Object content) {
+	public Task(String name, Date remindDate, String subject, String content) {
 		this.name = name;
 		this.remindDate = remindDate;
 		this.subject = subject;
@@ -30,11 +30,11 @@ public class Task {
 		this.subject = subject;
 	}
 
-	public Object getContent() {
+	public String getContent() {
 		return content;
 	}
 
-	public void setContent(Object content) {
+	public void setContent(String content) {
 		this.content = content;
 	}
 

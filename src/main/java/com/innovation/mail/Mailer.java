@@ -52,8 +52,7 @@ public class Mailer {
 			message.setFrom(new InternetAddress(USER_NAME));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(task.getName()));
 			message.setSubject("Gentle Reminder: " + task.getSubject());
-			message.setText(task.getContent().toString());
-
+			message.setText(task.getContent());
 			Transport.send(message);
 
 			System.out.println("Done");
@@ -84,13 +83,19 @@ public class Mailer {
 				for (Address address : in) {
 					addressTo = address.toString();
 				}
-				Multipart mp = (Multipart) msg.getContent();
-				BodyPart bp = mp.getBodyPart(0);
 
+				Object content = msg.getContent();
+				String body = "";
+				if (content instanceof String) {
+					body = (String) content;
+				} else if (content instanceof Multipart) {
+					Multipart mp = (Multipart) content;
+					BodyPart bp = mp.getBodyPart(0);
+					body = bp.getContent().toString();
+				}
 				String subject = msg.getSubject();
 				Date sentDate = RuleEngine.parseSubject(subject);
-
-				Task task = new Task(addressTo, sentDate, subject, bp.getContent());
+				Task task = new Task(addressTo, sentDate, subject, body);
 				TaskQueue.addTask(task);
 
 			}
